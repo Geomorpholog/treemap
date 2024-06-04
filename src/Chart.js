@@ -1,6 +1,6 @@
 import {useRef, useEffect} from "react";
 import * as d3 from "d3";
-
+//import {Legend, Swatches} from "@d3/color-legend"
 
 
 
@@ -13,8 +13,7 @@ export default function Chart(props){
     const window = useRef("#window")
     const svg = useRef("#svg")
     const legend = useRef("#legend")
-    const lenght = props.data.children.lenght
-    console.log(lenght);
+    const t = useRef("#tooltip")
     const root  = d3.treemap()
     .size([width, height])
     .padding(2)
@@ -22,6 +21,19 @@ export default function Chart(props){
        .sum((d) => d.value)
        .sort((a, b) => b.height - a.height || b.value - a.value))
     const color = d3.scaleOrdinal(dataSet.children.map(d => d.name), d3.schemeTableau10)
+    const tooltip = function(event){d3.select(window.current)
+      .append("div")
+      .attr("id","tooltip")
+      .attr("data-year",this.getAttribute("data-xvalue"))
+      .style("position","absolute")
+      .style("top", event.clientY - height/5 + "px")
+      .style("left", event.clientX + "px")
+      .style("width",width/7 +"px")
+      .style("height",height/5 +"px")
+      .style("opacity",0.75)
+      .style("background","var(--background3")
+      .html("Name:"+this.getAttribute("data-name") +"<br>"+ "Category:" + (this.getAttribute("data-category")) + "<br>" + "Value:" + (this.getAttribute("data-value")))
+    }
 
     useEffect(() => void d3.select(svg.current)
                            .selectAll("g")
@@ -33,11 +45,22 @@ export default function Chart(props){
                            .attr("width", d => d.x1 - d.x0)
                            .attr("height", d => d.y1 - d.y0)
                            .attr("class","tile")
-                           .attr("data-name",d => {while (d.depth > 1) d = d.parent; return d.data.name})
-                           .attr("data-category",d => {while (d.depth > 1) d = d.parent; return d.data.category})
-                           .attr("data-value",d => {while (d.depth > 1) d = d.parent; return d.data.name})                     
+                           .attr("data-name",d => d.data.name)
+                           .attr("data-category",d => d.data.category)
+                           .attr("data-value",d => d.data.value)
+                           .selectAll("g")
+                           .on("mouseover",tooltip)
+                           .on("mouseout",function(){
+                            d3.select(t.current)
+                             .remove()
+                           })                     
     )
-    
+    useEffect(() => void d3.select(svg.current)
+                          .selectAll("g")
+                          
+                          .append("text")
+                          .text(d => d.data.name)
+    )
     useEffect(() => void d3.select(window.current)
                            .append("svg")
                            .attr("id","legend")
@@ -47,10 +70,11 @@ export default function Chart(props){
                            .data(dataSet.children)
                            .enter()
                            .append("rect")
+                           .attr("class","legend-item")
                            .attr("width",30)
                            .attr("height",30)
                            .attr("fill", d=> color(d.name))
-                           .attr("x",(d,i) => i*60)              
+                           .attr("x",(d,i) => i*70)              
     )
     useEffect(() => void d3.select(legend.current)
                            .selectAll("text")
@@ -58,7 +82,7 @@ export default function Chart(props){
                            .enter()
                            .append("text")
                            .text(d => d.name)
-                           .attr("x",(d,i) => i*60)
+                           .attr("x",(d,i) => i*70)
                            .attr("y",50)
     )
     
