@@ -49,3 +49,7 @@
 #legend{
   font-size:0.6rem
 }
+
+.button :hover{
+color:var(--color2)
+}

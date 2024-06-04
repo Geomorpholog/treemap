@@ -11,14 +11,17 @@ export default function App() {
         <Button
         onclick = {() => setTitle("Video Game Sales")}
         sourceName = "Video Game Sales Data Set"
+        bg = {title === "Video Game Sales"?"var(--background2)":"var(--background3)"}
         />
         <Button
         onclick = {() => setTitle("Movie Sales")}
         sourceName = "Movie Sales Data Set"
+        bg = {title === "Movie Sales"?"var(--background2)":"var(--background3)"}
         />
         <Button
         onclick = {() => setTitle("Kickstarter Pledges")}
         sourceName = "Kikstarter Pledges Data Set"
+        bg = {title === "Kickstarter Pledges"?"var(--background2)":"var(--background3)"}
         />
       </div>
       

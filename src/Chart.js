@@ -1,6 +1,6 @@
 import {useRef, useEffect} from "react";
 import * as d3 from "d3";
-//import {Legend, Swatches} from "@d3/color-legend"
+
 
 
 
@@ -26,8 +26,8 @@ export default function Chart(props){
       .attr("id","tooltip")
       .attr("data-value",this.getAttribute("data-value"))
       .style("position","absolute")
-      .style("top", event.clientY - height/5 + "px")
-      .style("left", event.clientX + "px")
+      .style("top", event.pageY - height/5 + "px")
+      .style("left", event.pageX + "px")
       .style("width",width/7 +"px")
       .style("height",height/5 +"px")
       .style("opacity",0.75)
@@ -35,11 +35,12 @@ export default function Chart(props){
       .html("Name:"+this.getAttribute("data-name") +"<br>"+ "Category:" + (this.getAttribute("data-category")) + "<br>" + "Value:" + (this.getAttribute("data-value")))
     }
     
-    useEffect(() => void d3.select(svg.current)
+    useEffect(() => {    d3.select(svg.current)
                            .selectAll("g")
                            .data(root.leaves())
                            .join("g")
                            .attr("transform", d => `translate(${d.x0},${d.y0})`)
+                           .style("font-size","0.6rem")
                            .append("rect")
                            .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.name);})
                            .attr("width", d => d.x1 - d.x0)
@@ -53,13 +54,26 @@ export default function Chart(props){
                             d3.select(t.current)
                                .remove()
                            })                     
-    )
+})
     useEffect(() => void d3.select(svg.current)
-                          .selectAll("g")
-                          .append("text")
-                          .text(d => d.data.name)
-                          .attr("x",d => d.x0 )
-                          .attr("y",d => d.y0 + 10)
+                           .selectAll("g")
+                           .data(root.leaves())
+                           .append('text')
+                           .attr('class', 'tile-text')
+                           .selectAll('tspan')
+                           .data(function (d) {
+                           return d.data.name.split(/(?<=[a-z]{4}\s)/gi);
+                           })
+                           .enter()
+                           .append('tspan')
+                           .attr('x', 4)
+                           .attr('y', function (d, i) {
+                            return 13 + i * 10;
+                           })
+                           .text(function (d) {
+                           return d;
+                            })
+                           
     )
     
     useEffect(() => void d3.select(window.current)
