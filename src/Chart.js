@@ -24,7 +24,7 @@ export default function Chart(props){
     const tooltip = function(event){d3.select(window.current)
       .append("div")
       .attr("id","tooltip")
-      .attr("data-year",this.getAttribute("data-xvalue"))
+      .attr("data-value",this.getAttribute("data-value"))
       .style("position","absolute")
       .style("top", event.clientY - height/5 + "px")
       .style("left", event.clientX + "px")
@@ -34,7 +34,7 @@ export default function Chart(props){
       .style("background","var(--background3")
       .html("Name:"+this.getAttribute("data-name") +"<br>"+ "Category:" + (this.getAttribute("data-category")) + "<br>" + "Value:" + (this.getAttribute("data-value")))
     }
-
+    
     useEffect(() => void d3.select(svg.current)
                            .selectAll("g")
                            .data(root.leaves())
@@ -48,19 +48,20 @@ export default function Chart(props){
                            .attr("data-name",d => d.data.name)
                            .attr("data-category",d => d.data.category)
                            .attr("data-value",d => d.data.value)
-                           .selectAll("g")
                            .on("mouseover",tooltip)
                            .on("mouseout",function(){
                             d3.select(t.current)
-                             .remove()
+                               .remove()
                            })                     
     )
     useEffect(() => void d3.select(svg.current)
                           .selectAll("g")
-                          
                           .append("text")
                           .text(d => d.data.name)
+                          .attr("x",d => d.x0 )
+                          .attr("y",d => d.y0 + 10)
     )
+    
     useEffect(() => void d3.select(window.current)
                            .append("svg")
                            .attr("id","legend")
